@@ -9,33 +9,45 @@ private:
     int capacity;
 public:
 
-    MyBag() {
+    // Precondition: none.
+    // Postcondition: creates an empty bag with capacity 0 and size 0.
+    MyBag()
+    {
         capacity = 0;
         size = 0;
         data = new int[capacity];
     }
 
     // destructor
+    // Precondition: none.
+    // Postcondition: releases all allocated memory.
     ~MyBag() {
         delete[] data;
     }
 
+    // Precondition: none.
+    // Postcondition: returns the current number of elements.
     int getSize() const
     {
         return size;
     }
 
+    // Precondition: none.
+    // Postcondition: returns the current capacity.
     int getCapacity() const
     {
         return capacity;
     }
     
+    // Precondition: none.
+    // Postcondition: returns true if bag has no elements, false otherwise.
     bool isEmpty() const
     {
         return size == 0;
     }
 
-    // resize to new capacity
+    // Precondition: newCap >= size (to preserve existing elements).
+    // Postcondition: capacity is changed to newCap and existing elements are preserved.
     void resize(int newCap) 
     {
 
@@ -52,6 +64,8 @@ public:
         capacity = newCap;
     }
 
+    // Precondition: none.
+    // Postcondition: value added at the end; size increased by 1 (resized if needed).
     void insert(int value)
     {
         if (size == capacity)
@@ -63,6 +77,8 @@ public:
         size++;
     }
 
+    // Precondition: none (bag may be empty).
+    // Postcondition: prints message indicating whether the value was found; bag unchanged.
     void search(int value)
     {
         bool found = false;
@@ -79,6 +95,8 @@ public:
         }
     }
 
+    // Precondition: index >= 0 and index < size.
+    // Postcondition: element at index removed; subsequent elements shifted left; size decreased by 1.
     void remove(int index)
     {
         if (index < 0 || index >= size) 
@@ -102,6 +120,8 @@ public:
         
     }
 
+    // Precondition: none.
+   // Postcondition: bag is emptied; size = 0; capacity = 0.
     void clear()
     {
         delete[] data;
@@ -110,6 +130,8 @@ public:
         data = new int[capacity];
     }
 
+    // Precondition: elements must support operator> for comparison.
+    // Postcondition: bag elements sorted in ascending order.
     void sortAscending()
     {
         for (int i = 0; i < size - 1; i++)
@@ -127,6 +149,8 @@ public:
         cout << "\n\t\tMybag has been sorted.";
     }
 
+    // Precondition: none.
+    // Postcondition: outputs the bag contents to the given stream.
     friend ostream& operator<<(ostream& out, const MyBag& bag)
     {
         if (bag.size == 0)
