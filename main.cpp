@@ -1,6 +1,6 @@
 #include<iostream>
 #include "input.h"
-#include"MyBag.h"
+#include "MyBag.h"
 using namespace std;
 
 void mainMenu();
@@ -86,33 +86,53 @@ void ApplicationMenu()
 void nonTemplateFuntion()
 {
 	MyBag bag;
+
 	do
 	{
-		
 		system("cls");
 		cout << "\n\t1> Non-template MyBag container of int";
 		subMenu();
 		switch (toupper(inputChar("\n\t\tOption: ")))
 		{
 		case 'A':
-
+		{
+			bag.clear();
+			cout << "\n\t\tMyBag is cleared of all elements.";
+		}
 			break;
-		case 'B':
-			bag.insert(inputInteger("\n\tEnter a value and insert into MyBag: "));
+		case 'B': bag.insert(inputInteger("\n\t\tEnter a value and insert into MyBag: "));
 			break;
 		case 'C':
-			bag.search(inputInteger("\n\tEnter a value to search from MyBag: "));
+		{
+			if (bag.isEmpty())
+			{
+				cout << "\n\t\tMyBag is Empty.";
+			}
+			else
+				bag.search(inputInteger("\n\t\tEnter a value to search from MyBag: "));
+		}
 			break;
 		case 'D':
-			break;
-		case 'E':
-			break;
-		case 'F':
-			
+		{
+			if (bag.isEmpty())
 			{
-				cout << bag;
+				cout << "\n\t\tMyBag is Empty.";
 			}
-			
+			else
+				bag.remove(inputInteger("\n\t\tEnter an index(subscript) from MyBag to be deleted :"));
+		}
+			break;
+		case 'E': 
+		{
+			if (bag.isEmpty())
+			{
+				cout << "\n\t\tMyBag is Empty.";
+			}
+			else
+				bag.sortAscending();
+		}
+			break;
+		case 'F': cout << bag;
 			break;
 		case '0': return;
 		default:
@@ -122,7 +142,6 @@ void nonTemplateFuntion()
 
 		cout << "\n\n\t";
 		system("pause");
-
 
 	} while (true);
 }
@@ -154,7 +173,7 @@ void TemplateFuntion()
 			break;
 		}
 
-		cout << "\n\t";
+		cout << "\n\n\t";
 		system("pause");
 
 	} while (true);
