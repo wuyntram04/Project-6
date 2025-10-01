@@ -1,5 +1,6 @@
 #include<iostream>
 #include "input.h"
+#include"MyBag.h"
 using namespace std;
 
 void mainMenu();
@@ -23,7 +24,7 @@ int main()
 		{
 		case 1: nonTemplateFuntion();
 			break;
-		case 2: TemplateFuntion();	
+		case 2: TemplateFuntion();
 			break;
 		case 3: ApplicationFuntion();
 			break;
@@ -84,24 +85,34 @@ void ApplicationMenu()
 
 void nonTemplateFuntion()
 {
+	MyBag bag;
 	do
 	{
+		
 		system("cls");
 		cout << "\n\t1> Non-template MyBag container of int";
 		subMenu();
 		switch (toupper(inputChar("\n\t\tOption: ")))
 		{
 		case 'A':
+
 			break;
 		case 'B':
+			bag.insert(inputInteger("\n\tEnter a value and insert into MyBag: "));
 			break;
 		case 'C':
+			bag.search(inputInteger("\n\tEnter a value to search from MyBag: "));
 			break;
 		case 'D':
 			break;
 		case 'E':
 			break;
 		case 'F':
+			
+			{
+				cout << bag;
+			}
+			
 			break;
 		case '0': return;
 		default:
@@ -109,8 +120,9 @@ void nonTemplateFuntion()
 			break;
 		}
 
-		cout << "\n\t";
+		cout << "\n\n\t";
 		system("pause");
+
 
 	} while (true);
 }
