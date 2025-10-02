@@ -85,7 +85,7 @@ void ApplicationMenu()
 
 void nonTemplateFuntion()
 {
-	MyBag bag;
+	nonTemplate::MyBag bag;
 
 	do
 	{
@@ -148,6 +148,7 @@ void nonTemplateFuntion()
 
 void TemplateFuntion()
 {
+	TemplateVersion::MyBagT<double> dbag;
 	do
 	{
 		system("cls");
@@ -156,16 +157,44 @@ void TemplateFuntion()
 		switch (toupper(inputChar("\n\t\tOption: ")))
 		{
 		case 'A':
+		{
+			dbag.clear();
+			cout << "\n\t\tMyBag is cleared of all elements.";
+		}
 			break;
-		case 'B':
+		case 'B': dbag.insert(inputDouble("\n\t\tEnter a value and insert into MyBag: "));
 			break;
 		case 'C':
-			break;
+		{
+			if (dbag.isEmpty())
+			{
+				cout << "\n\t\tMyBag is Empty.";
+			}
+			else
+				dbag.search(inputDouble("\n\t\tEnter a value to search from MyBag: "));
+		}
+		break;
 		case 'D':
+		{
+			if (dbag.isEmpty())
+			{
+				cout << "\n\t\tMyBag is Empty.";
+			}
+			else
+				dbag.remove(inputDouble("\n\t\tEnter an index(subscript) from MyBag to be deleted :"));
+		}
 			break;
 		case 'E':
+		{
+			if (dbag.isEmpty())
+			{
+				cout << "\n\t\tMyBag is Empty.";
+			}
+			else
+				dbag.sortAscending();
+		}
 			break;
-		case 'F':
+		case 'F':  cout << dbag;
 			break;
 		case '0': return;
 		default:
