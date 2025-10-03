@@ -1,6 +1,8 @@
 #include<iostream>
+#include<fstream>
 #include "input.h"
 #include "MyBag.h"
+#include "Course.h"
 using namespace std;
 
 void mainMenu();
@@ -9,7 +11,6 @@ void nonTemplateFuntion();
 void TemplateFuntion();
 void ApplicationMenu();
 void ApplicationFuntion();
-
 
 
 int main()
@@ -99,7 +100,7 @@ void nonTemplateFuntion()
 			bag.clear();
 			cout << "\n\t\tMyBag is cleared of all elements.";
 		}
-			break;
+		break;
 		case 'B': bag.insert(inputInteger("\n\t\tEnter a value and insert into MyBag: "));
 			break;
 		case 'C':
@@ -111,7 +112,7 @@ void nonTemplateFuntion()
 			else
 				bag.search(inputInteger("\n\t\tEnter a value to search from MyBag: "));
 		}
-			break;
+		break;
 		case 'D':
 		{
 			if (bag.isEmpty())
@@ -121,8 +122,8 @@ void nonTemplateFuntion()
 			else
 				bag.remove(inputInteger("\n\t\tEnter an index(subscript) from MyBag to be deleted :"));
 		}
-			break;
-		case 'E': 
+		break;
+		case 'E':
 		{
 			if (bag.isEmpty())
 			{
@@ -131,7 +132,7 @@ void nonTemplateFuntion()
 			else
 				bag.sortAscending();
 		}
-			break;
+		break;
 		case 'F': cout << bag;
 			break;
 		case '0': return;
@@ -161,7 +162,7 @@ void TemplateFuntion()
 			dbag.clear();
 			cout << "\n\t\tMyBag is cleared of all elements.";
 		}
-			break;
+		break;
 		case 'B': dbag.insert(inputDouble("\n\t\tEnter a value and insert into MyBag: "));
 			break;
 		case 'C':
@@ -183,7 +184,7 @@ void TemplateFuntion()
 			else
 				dbag.remove(inputDouble("\n\t\tEnter an index(subscript) from MyBag to be deleted :"));
 		}
-			break;
+		break;
 		case 'E':
 		{
 			if (dbag.isEmpty())
@@ -193,7 +194,7 @@ void TemplateFuntion()
 			else
 				dbag.sortAscending();
 		}
-			break;
+		break;
 		case 'F':  cout << dbag;
 			break;
 		case '0': return;
@@ -210,6 +211,7 @@ void TemplateFuntion()
 
 void ApplicationFuntion()
 {
+	Course* course = nullptr;
 	do
 	{
 		system("cls");
@@ -218,8 +220,10 @@ void ApplicationFuntion()
 		switch (inputInteger("\n\t\tOption: "))
 		{
 		case 1:
+			course = new Course[inputInteger("\n\t 1> Enter the number of courses: ")];
 			break;
 		case 2:
+
 			break;
 		case 3:
 			break;
@@ -237,4 +241,31 @@ void ApplicationFuntion()
 		system("pause");
 
 	} while (true);
+}
+
+void readFile(string filename, Course* &course)
+{
+	
+	fstream dataFile;
+
+	dataFile.open( filename, ios::in | ios::binary);
+
+	if (dataFile.fail())
+	{
+		cout << "\n\tThe input file, " << filename << ", does not exist";
+		return;
+	}
+
+	string courseName;
+	string id;
+	string name;
+	string score;
+
+	while (!dataFile.eof())
+	{
+		if (getline(dataFile, courseName) && getline(dataFile, id, ',') && getline(dataFile, name, ',') && getline(dataFile, score, '\n'))
+		{
+
+		}
+	}
 }
