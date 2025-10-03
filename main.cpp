@@ -1,14 +1,22 @@
 #include<iostream>
+#include<vector>
+#include <sstream>
+#include <fstream>
+#include<iomanip>
 #include "input.h"
 #include "MyBag.h"
+#include "Course.h"
+
 using namespace std;
 
+///////////////========================PROTOTYPE=====================//////////////////////
 void mainMenu();
 void subMenu();
 void nonTemplateFuntion();
 void TemplateFuntion();
 void ApplicationMenu();
-void ApplicationFuntion();
+void ApplicationFunction();
+
 
 
 
@@ -26,7 +34,7 @@ int main()
 			break;
 		case 2: TemplateFuntion();
 			break;
-		case 3: ApplicationFuntion();
+		case 3: ApplicationFunction();
 			break;
 		case 0: exit(0);
 
@@ -99,7 +107,7 @@ void nonTemplateFuntion()
 			bag.clear();
 			cout << "\n\t\tMyBag is cleared of all elements.";
 		}
-			break;
+		break;
 		case 'B': bag.insert(inputInteger("\n\t\tEnter a value and insert into MyBag: "));
 			break;
 		case 'C':
@@ -111,7 +119,7 @@ void nonTemplateFuntion()
 			else
 				bag.search(inputInteger("\n\t\tEnter a value to search from MyBag: "));
 		}
-			break;
+		break;
 		case 'D':
 		{
 			if (bag.isEmpty())
@@ -119,10 +127,10 @@ void nonTemplateFuntion()
 				cout << "\n\t\tMyBag is Empty.";
 			}
 			else
-				bag.remove(inputInteger("\n\t\tEnter an index(subscript) from MyBag to be deleted :"));
+				bag.remove(inputInteger("\n\t\tEnter an index(subscript) from MyBag to be deleted: "));
 		}
-			break;
-		case 'E': 
+		break;
+		case 'E':
 		{
 			if (bag.isEmpty())
 			{
@@ -131,7 +139,7 @@ void nonTemplateFuntion()
 			else
 				bag.sortAscending();
 		}
-			break;
+		break;
 		case 'F': cout << bag;
 			break;
 		case '0': return;
@@ -161,7 +169,7 @@ void TemplateFuntion()
 			dbag.clear();
 			cout << "\n\t\tMyBag is cleared of all elements.";
 		}
-			break;
+		break;
 		case 'B': dbag.insert(inputDouble("\n\t\tEnter a value and insert into MyBag: "));
 			break;
 		case 'C':
@@ -176,13 +184,14 @@ void TemplateFuntion()
 		break;
 		case 'D':
 		{
-			if (dbag.isEmpty())
-			{
+			if (dbag.isEmpty()) {
 				cout << "\n\t\tMyBag is Empty.";
 			}
-			else
-				dbag.remove(inputDouble("\n\t\tEnter an index(subscript) from MyBag to be deleted :"));
-		}
+			else {
+				int idx = inputInteger("\n\t\tEnter an index(subscript) from MyBag to be deleted: ");
+				cout << "\n\t\tValue " << dbag[idx] << " has been deleted from MyBag.";
+				dbag.remove(idx);
+			}
 			break;
 		case 'E':
 		{
@@ -193,7 +202,7 @@ void TemplateFuntion()
 			else
 				dbag.sortAscending();
 		}
-			break;
+		break;
 		case 'F':  cout << dbag;
 			break;
 		case '0': return;
@@ -202,39 +211,156 @@ void TemplateFuntion()
 			break;
 		}
 
+	
+		}
+
 		cout << "\n\n\t";
 		system("pause");
 
 	} while (true);
 }
 
-void ApplicationFuntion()
-{
-	do
+void ApplicationFunction()
 	{
-		system("cls");
-		ApplicationMenu();
+		static Course* courses = nullptr; // dynamic array of Course
+		static int courseCount = 0;       // how many courses allocated
 
-		switch (inputInteger("\n\t\tOption: "))
-		{
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			break;
-		case 4:
-			break;
-		case 5:
-			break;
-		case 0: return;
-		default:
-			cout << "\n\tERROR: Invalid input.";
-			break;
-		}
+		do {
+			system("cls");
+			ApplicationMenu();
 
-		cout << "\n\t";
-		system("pause");
+			switch (inputInteger("\n\t\tOption: ")) {
 
-	} while (true);
-}
+			case 1: { // specify number of courses
+				int n = inputInteger("\n\t\t1> Enter the number of courses (1-100): ", 1, 100);
+				delete[] courses;                // free any previous allocation
+				courses = new Course[n];         // allocate new dynamic array
+				courseCount = n;
+				cout << "\n\t\t" << n << " Course(s) has been created..";
+				break;
+			}
+
+			case 2: { // read in data files
+				if (courseCount == 0) { cout << "\n\tNo courses yet."; break; }
+
+				for (int i = 0; i < courseCount; ++i) {
+					while (true) {
+						string filename = inputString("\n\t\t2> Enter a data file name for Course[" + to_string(i) + "] (STOP - return): ", true);
+						if (filename == "STOP" || filename == "stop") {
+							i = courseCount; // break outer for loop
+							break;
+						}
+						if (!courses[i].loadFromFile(filename)) {
+							cout << "\n\tERROR: file, " << filename << ", cannot be found. Please re-specify.\n";
+							continue; // loop again asking for the same Course[i]
+						}
+						cout << "\n\tData from file, " << filename
+							<< ", has been read and stored into Course[" << i << "].\n";
+						break; // go to next course index
+					}
+				}
+				break;
+			}
+
+			case 3: { // search for a student record from a course
+				if (courseCount == 0) { cout << "\n\tNo courses yet."; break; }
+
+				// list courses first
+				cout << "\n\t3> Course(s)";
+				cout << "\n\t" << string(80, char(196));
+				for (int i = 0; i < courseCount; ++i) {
+					cout << "\n\t " << (i + 1) << ". " << courses[i].getCode() << " " << courses[i].getName();
+				}
+				cout << "\n\t" << string(80, char(196));
+				int choice = inputInteger("\n\tSelect course to search: ", 1, courseCount);
+				Course& selected = courses[choice - 1];
+
+				do {
+					cout << "\n\t3> Search by";
+					cout << "\n\t" << string(55, char(196));
+					cout << "\n\t\t1. ID Number";
+					cout << "\n\t\t2. Name";
+					cout << "\n\t\t0. return";
+					cout << "\n\t" << string(55, char(196));
+					int searchMode = inputInteger("\n\t Option: ", 0, 2);
+					if (searchMode == 0) break; // exit search menu
+
+					if (searchMode == 1) {
+						int searchID = inputInteger("\n\t\tEnter StudentID to search: ");
+						selected.searchByID(searchID);
+					}
+					else {
+						string searchName = inputString("\n\t\tEnter name (full or partial) to search: ", true);
+						selected.searchByName(searchName);
+					}
+
+				} while (true);
+				break;
+			}
+
+			case 4:
+			{ // remove a student record from a course
+				if (courseCount == 0) { cout << "\n\tNo courses yet."; break; }
+
+				// list courses first
+				cout << "\n\tCourse";
+				cout << "\n\t" << string(80, char(196));
+				for (int i = 0; i < courseCount; ++i) {
+					cout << "\n\t " << (i + 1) << ". " << courses[i].getCode() << " " << courses[i].getName();
+				}
+				cout << "\n\t" << string(80, char(196));
+				int choice = inputInteger("\n\tSelect course to delete from: ", 1, courseCount);
+				Course& selected = courses[choice - 1];
+
+				int delID = inputInteger("\n\tEnter a student ID to search and delete: ");
+				int idx = selected.findIndexByID(delID);
+				if (idx == -1) {
+					cout << "\n\tNo student found with ID " << delID << "\n";
+				}
+				else {
+					selected.removeStudentByIndex(idx);
+					cout << "\n\tID: " << delID
+						<< " has been found in Course '"
+						<< selected.getCode() << " " << selected.getName()
+						<< "' and has been removed.\n";
+				}
+				break;
+			}
+
+			case 5:
+			{ // display
+				if (courseCount == 0) { cout << "\n\tNo courses yet."; break; }
+
+				cout << "\n\tCourse";
+				cout << "\n\t" << string(80, char(196));
+				for (int i = 0; i < courseCount; ++i) {
+					cout << "\n\t " << (i + 1) << ". " << courses[i].getCode() << " " << courses[i].getName();
+				}
+				cout << "\n\t " << (courseCount + 1) << ". all";
+				cout << "\n\t" << string(80, char(196));
+				int choice = inputInteger("\n\t Option: ", 1, courseCount + 1);
+
+				if (choice == courseCount + 1) {
+					for (int i = 0; i < courseCount; ++i) cout << courses[i];
+				}
+				else {
+					cout << courses[choice - 1];
+				}
+				break;
+			}
+
+			case 0:
+				delete[] courses; // free before exit
+				return;
+
+			default:
+				cout << "\n\tERROR: Invalid input.";
+				break;
+			}
+
+			cout << "\n\n\t";
+			system("pause");
+
+		} while (true);
+	}
+
