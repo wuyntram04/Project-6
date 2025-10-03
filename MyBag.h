@@ -1,5 +1,7 @@
+#pragma once
 #include <iostream>
 using namespace std;
+
 
 namespace nonTemplate
 {
@@ -70,9 +72,18 @@ namespace nonTemplate
         // Postcondition: value added at the end; size increased by 1 (resized if needed).
         void insert(int value)
         {
+            // If array is full, grow it
             if (size == capacity)
             {
-                resize(capacity + 1);
+                int newCap;
+                if (capacity == 0) {
+                    newCap = 1;          // start with 1 if nothing yet
+                }
+                else {
+                    newCap = capacity * 2;  // double each time
+                }
+
+                resize(newCap);
             }
 
             data[size] = value;
@@ -124,10 +135,9 @@ namespace nonTemplate
 
         // Precondition: none.
        // Postcondition: bag is emptied; size = 0; capacity = 0.
-        void clear()
-        {
+        void clear() {
             delete[] data;
-            capacity = 0;
+            capacity = 2;   // safe default
             size = 0;
             data = new int[capacity];
         }
@@ -173,75 +183,102 @@ namespace nonTemplate
     };
 }
 
-namespace TemplateVersion
-{
+namespace TemplateVersion {
     template <typename T>
-    class MyBagT
-    {
+    class MyBagT {
     private:
         T* data;
         int size;
         int capacity;
     public:
-
-        // Precondition: none.
-        // Postcondition: creates an empty bag with capacity 0 and size 0.
         MyBagT() {
             capacity = 0;
             size = 0;
             data = new T[capacity];
         }
 
-        // Precondition: none.
-        // Postcondition: releases all allocated memory.
-        ~MyBagT() {
-            delete[] data;
+        // 1. Copy constructor
+        MyBagT(const MyBagT& other)
+            : size(other.size), capacity(other.capacity)
+        {
+            data = new T[capacity];
+            for (int i = 0; i < size; ++i) {
+                data[i] = other.data[i];
+            }
         }
 
-        // Precondition: none.
-        // Postcondition: returns the current number of elements in the bag.
-        int getSize() const {
-            return size;
+        // 2. Copy assignment
+        MyBagT& operator=(const MyBagT& other)
+        {
+            if (this != &other) {
+                T* newData = new T[other.capacity];
+                for (int i = 0; i < other.size; ++i) newData[i] = other.data[i];
+                delete[] data;
+                data = newData;
+                size = other.size;
+                capacity = other.capacity;
+            }
+            return *this;
         }
 
-        // Precondition: none.
-        // Postcondition: returns the current capacity of the bag.
-        int getCapacity() const {
-            return capacity;
+        // 3. Move constructor
+        MyBagT(MyBagT&& other) noexcept
+            : data(other.data), size(other.size), capacity(other.capacity)
+        {
+            other.data = nullptr;
+            other.size = 0;
+            other.capacity = 0;
         }
 
-        // Precondition: none.
-        // Postcondition: returns true if the bag is empty, false otherwise.
-        bool isEmpty() const {
-            return size == 0;
+        // 4. Move assignment
+        MyBagT& operator=(MyBagT&& other) noexcept
+        {
+            if (this != &other) {
+                delete[] data;
+                data = other.data;
+                size = other.size;
+                capacity = other.capacity;
+                other.data = nullptr;
+                other.size = 0;
+                other.capacity = 0;
+            }
+            return *this;
         }
 
-        // Precondition: newCap >= size to preserve existing elements.
-        // Postcondition: capacity changed to newCap, existing elements preserved.
+        ~MyBagT() { delete[] data; }
+
+        int getSize() const { return size; }
+        int getCapacity() const { return capacity; }
+        bool isEmpty() const { return size == 0; }
+
         void resize(int newCap) {
             T* newData = new T[newCap];
-            for (int i = 0; i < size; i++) {
-                newData[i] = data[i];
-            }
+            for (int i = 0; i < size; i++) newData[i] = data[i];
             delete[] data;
             data = newData;
             capacity = newCap;
         }
 
-        // Precondition: none (bag resizes automatically if needed).
-        // Postcondition: value added to the end of the bag; size increased by 1.
         void insert(const T& value)
         {
+            // If array is full, grow it
             if (size == capacity)
             {
-                resize(capacity + 1);
+                int newCap;
+                if (capacity == 0) {
+                    newCap = 1;          // start with 1 if nothing yet
+                }
+                else {
+                    newCap = capacity * 2;  // double each time
+                }
+
+                resize(newCap);
             }
+
             data[size] = value;
             size++;
         }
 
-        // Precondition: none (bag may be empty).
-        // Postcondition: prints message indicating whether the value was found; bag unchanged.
         void search(const T& value)
         {
             bool found = false;
@@ -254,41 +291,29 @@ namespace TemplateVersion
                     break;
                 }
             }
-            if (!found) {
-                cout << "\n\t\tValue " << value << " not found";
-            }
+            if (!found) cout << "\n\t\tValue " << value << " not found";
         }
 
-        // Precondition: index must satisfy 0 <= index < size.
-        // Postcondition: element at index removed, remaining elements shifted left, size decreased by 1.
-        void remove(int index) {
+        void remove(int index)
+        {
             if (index < 0 || index >= size) {
                 cout << "\n\t\tInvalid index. Please enter an index between 0 and " << size - 1 << ".";
                 return;
             }
 
             T deletedValue = data[index];
-
-            // shift elements left
-            for (int i = index; i < size - 1; i++) {
-                data[i] = data[i + 1];
-            }
-
+            for (int i = index; i < size - 1; i++) data[i] = data[i + 1];
             size--;
-            cout << "\n\t\tValue " << deletedValue << " has been deleted from MyBagT.";
+            /*cout << "\n\t\tValue " << deletedValue << " has been deleted from MyBagT.";*/
         }
 
-        // Precondition: none.
-        // Postcondition: all elements removed; bag reset to empty state (size=0, capacity=0).
         void clear() {
             delete[] data;
-            capacity = 0;
+            capacity = 2;
             size = 0;
             data = new T[capacity];
         }
 
-        // Precondition: elements of type T must support operator> for comparison.
-        // Postcondition: elements sorted in ascending order within the bag.
         void sortAscending() {
             for (int i = 0; i < size - 1; i++) {
                 for (int j = 0; j < size - i - 1; j++) {
@@ -302,8 +327,6 @@ namespace TemplateVersion
             cout << "\n\t\tMyBagT has been sorted.";
         }
 
-        // Precondition: none.
-        // Postcondition: outputs the bag contents to the given stream.
         friend ostream& operator<<(ostream& out, const MyBagT<T>& bag)
         {
             if (bag.size == 0) {
@@ -317,5 +340,8 @@ namespace TemplateVersion
             }
             return out;
         }
+
+        T& operator[](int index) { return data[index]; }
+        const T& operator[](int index) const { return data[index]; }
     };
 }
